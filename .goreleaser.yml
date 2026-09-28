@@ -3,6 +3,11 @@ version: 2
 before:
   hooks:
     - go mod download
+    # the scripts only name the binary, so one set serves every platform
+    - mkdir -p completions
+    - sh -c 'go run . _carapace bash > completions/claude'
+    - sh -c 'go run . _carapace zsh > completions/_claude'
+    - sh -c 'go run . _carapace fish > completions/claude.fish'
 
 builds:
   - id: claude-complete
@@ -29,6 +34,63 @@ archives:
     files:
       - LICENSE
       - README.md
+      - completions/*
+
+# each package installs the completion scripts where the shells load them without any setup
+nfpms:
+  - package_name: claude-complete
+    homepage: https://github.com/utkuozdemir/claude-complete
+    maintainer: Utku Ozdemir <utkuozdemir@gmail.com>
+    description: Shell completion for the Claude Code CLI
+    license: MIT
+    formats:
+      - deb
+      - rpm
+      - apk
+      - archlinux
+    bindir: /usr/bin
+    contents:
+      - src: completions/claude
+        dst: /usr/share/bash-completion/completions/claude
+      - src: completions/claude.fish
+        dst: /usr/share/fish/vendor_completions.d/claude.fish
+      - src: completions/_claude
+        dst: /usr/share/zsh/vendor-completions/_claude
+        packager: deb
+      - src: completions/_claude
+        dst: /usr/share/zsh/site-functions/_claude
+        packager: rpm
+      - src: completions/_claude
+        dst: /usr/share/zsh/site-functions/_claude
+        packager: apk
+      - src: completions/_claude
+        dst: /usr/share/zsh/site-functions/_claude
+        packager: archlinux
+
+homebrew_casks:
+  - repository:
+      owner: utkuozdemir
+      name: homebrew-tap
+      token: "{{ .Env.PRIVATE_ACCESS_TOKEN }}"
+    skip_upload: auto
+    commit_author:
+      name: Utku Ozdemir
+      email: utkuozdemir@gmail.com
+    directory: Casks
+    homepage: https://github.com/utkuozdemir/claude-complete
+    description: Shell completion for the Claude Code CLI
+    license: MIT
+    completions:
+      bash: completions/claude
+      zsh: completions/_claude
+      fish: completions/claude.fish
+    # the binaries are not notarized, so remove the quarantine to avoid the "damaged" error on macOS
+    hooks:
+      post:
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/claude-complete"]
+          end
 
 checksum:
   name_template: checksums.txt

@@ -39,3 +39,5 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # pushes the cask to utkuozdemir/homebrew-tap
+          PRIVATE_ACCESS_TOKEN: ${{ secrets.PRIVATE_ACCESS_TOKEN }}

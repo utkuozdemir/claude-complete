@@ -43,10 +43,13 @@ jobs:
         run: git ls-files '*.md' | xargs npx --yes markdownlint-cli@0.49.1
       - name: Check module tidiness
         run: go mod tidy -diff
-      - name: Check the release configuration
+      # builds every archive, package and the cask, so a broken release configuration fails here, not on a tag
+      - name: Build a snapshot release
         uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
         with:
-          args: check
+          args: release --snapshot --clean
+        env:
+          PRIVATE_ACCESS_TOKEN: placeholder
       # the shell tests skip a shell that is missing, so install every one of them
       - name: Install the shells
         run: sudo apt-get update && sudo apt-get install -y zsh fish
