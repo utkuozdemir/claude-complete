@@ -1,0 +1,50 @@
+version: "2"
+linters:
+  default: all
+  disable:
+    - depguard # breaking things: https://github.com/atc0005/go-ci/issues/1024
+    - err113 # no need to wrap all errors, too much work
+    - exhaustruct # pointless
+    - exhaustruct_v5 # pointless
+    - wsl # deprecated
+    - noinlineerr # enormous fan of inline errors
+    - gomodguard # deprecated
+    - gochecknoglobals # globals are sometimes ok
+    - mnd # magic numbers are sometimes ok, this linter is too noisy
+  settings:
+    goconst:
+      min-occurrences: 5
+    varnamelen:
+      min-name-length: 2
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - std-error-handling
+      - common-false-positives
+      - legacy
+    rules:
+      - linters:
+          - goconst
+        path: (.+)_test\.go
+      # tests write fake executables, which need the execute bit, run the binary they built, and read
+      # and write paths they made themselves
+      - linters:
+          - gosec
+        path: (.+)_test\.go
+        text: G306|G204|G703
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+    - golines
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - localmodule
+    golines:
+      max-len: 120

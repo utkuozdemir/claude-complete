@@ -1,0 +1,44 @@
+{
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests",
+    ":automergeBranch",
+    ":automergeMinor",
+    ":automergeDigest",
+    ":semanticCommitTypeAll(chore)"
+  ],
+  "postUpdateOptions": [
+    "gomodTidy"
+  ],
+  "packageRules": [
+    {
+      "matchDatasources": [
+        "go"
+      ],
+      "groupName": "go packages"
+    },
+    {
+      "extends": [
+        ":automergeMajor"
+      ],
+      "matchFileNames": [
+        ".github/workflows/**"
+      ],
+      "groupName": "github actions"
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/\\.github\\/workflows\\/.*/",
+        "/Taskfile\\.yml/"
+      ],
+      "matchStrings": [
+        "# renovate: depName=(?<depName>[^\\s]+)( datasource=(?<datasource>[^\\s]+))?\\n[^\\n]*?(?<currentValue>v?\\d+\\.\\d+\\.\\d+(-[\\S]+)?)"
+      ],
+      "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}github-tags{{/if}}",
+      "versioningTemplate": "semver"
+    }
+  ]
+}
