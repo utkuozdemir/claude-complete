@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 
@@ -109,7 +110,13 @@ func load(ctx context.Context, refresh bool) (*spec.Spec, error) {
 		return nil, fmt.Errorf("failed to load the spec: %w", err)
 	}
 
-	loaded, err := spec.Load(ctx, spec.Exec("claude", helpTimeout), path, spec.Identify("claude"), refresh)
+	// reading the version from the installed files saves starting claude on every completion
+	var version string
+	if bin, err := exec.LookPath("claude"); err == nil {
+		version = spec.VersionFromPath(bin)
+	}
+
+	loaded, err := spec.Load(ctx, spec.Exec("claude", helpTimeout), path, version, refresh)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load the spec: %w", err)
 	}

@@ -70,12 +70,13 @@ Those are not tested here.
 
 The first completion after a Claude Code update runs `claude <command> --help` for every command.
 This takes about a second, and the result is cached under `~/.cache/claude-complete`.
-Every completion after that reads the cache, and starts no other process.
+Every completion after that reads the cache.
+
+An update is noticed by the version of the installed `claude`.
+It is read from where `claude` is installed, for the native installer and Homebrew.
+Otherwise, e.g., for npm or a wrapper script, it is asked from `claude --version` on every completion.
 
 `claude-complete spec` prints what it read.
-
-An update is noticed because the `claude` on your `PATH` becomes a different file.
-If yours is a wrapper script that never changes, run `claude-complete spec --refresh` after you update Claude Code.
 
 ## License
 

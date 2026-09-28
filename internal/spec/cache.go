@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 )
 
@@ -24,49 +23,18 @@ func CachePath() (string, error) {
 	return filepath.Join(dir, "claude-complete", "spec.json"), nil
 }
 
-// Identify returns the resolved path, the size and the modification time of the binary called name on PATH,
-// or "" when it is not found.
-func Identify(name string) string {
-	path, err := exec.LookPath(name)
-	if err != nil {
-		return ""
+// Load returns the spec of the installed claude, from the cache at path when it is for that version, and from
+// a fresh walk otherwise. An empty version is asked from claude.
+func Load(ctx context.Context, run Runner, path, version string, refresh bool) (*Spec, error) {
+	if version == "" {
+		var err error
+
+		if version, err = Version(ctx, run); err != nil {
+			return nil, err
+		}
 	}
 
-	if path, err = filepath.EvalSymlinks(path); err != nil {
-		return ""
-	}
-
-	info, err := os.Stat(path)
-	if err != nil {
-		return ""
-	}
-
-	return fmt.Sprintf("%s %d %d", path, info.Size(), info.ModTime().UnixNano())
-}
-
-// Load returns the spec of the installed claude, from the cache at path when it is current, and from a
-// fresh walk otherwise.
-//
-// The cache is current when it was read from the same binary, or else when claude reports the same
-// version. Only the latter starts a process.
-func Load(ctx context.Context, run Runner, path, binary string, refresh bool) (*Spec, error) {
-	cached, err := read(path)
-	usable := !refresh && err == nil && cached.Root.valid()
-
-	if usable && binary != "" && cached.Binary == binary {
-		return cached, nil
-	}
-
-	version, err := Version(ctx, run)
-	if err != nil {
-		return nil, err
-	}
-
-	if usable && cached.Version == version {
-		// reinstalled or moved, the tree is the same
-		cached.Binary = binary
-		_ = write(path, cached)
-
+	if cached, err := read(path); !refresh && err == nil && cached.Version == version && cached.Root.valid() {
 		return cached, nil
 	}
 
@@ -75,7 +43,7 @@ func Load(ctx context.Context, run Runner, path, binary string, refresh bool) (*
 		return nil, err
 	}
 
-	fresh := &Spec{Version: version, Binary: binary, Root: root}
+	fresh := &Spec{Version: version, Root: root}
 
 	_ = write(path, fresh) // failing only costs another walk
 

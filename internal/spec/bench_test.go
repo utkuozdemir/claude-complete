@@ -2,7 +2,6 @@ package spec_test
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
@@ -18,17 +17,6 @@ func BenchmarkLoadCached(b *testing.B) {
 		b.Fatal(err)
 	}
 
-	var cached spec.Spec
-	if err = json.Unmarshal(data, &cached); err != nil {
-		b.Fatal(err)
-	}
-
-	cached.Binary = "/usr/local/bin/claude 1 1"
-
-	if data, err = json.Marshal(cached); err != nil {
-		b.Fatal(err)
-	}
-
 	path := filepath.Join(b.TempDir(), "spec.json")
 	if err = os.WriteFile(path, data, 0o600); err != nil {
 		b.Fatal(err)
@@ -41,7 +29,7 @@ func BenchmarkLoadCached(b *testing.B) {
 	b.ReportAllocs()
 
 	for b.Loop() {
-		if _, err := spec.Load(b.Context(), run, path, cached.Binary, false); err != nil {
+		if _, err := spec.Load(b.Context(), run, path, "2.1.282", false); err != nil {
 			b.Fatal(err)
 		}
 	}

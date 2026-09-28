@@ -6,7 +6,6 @@ import "slices"
 // Spec represents the command tree of one claude version.
 type Spec struct {
 	Version string   `json:"version"`
-	Binary  string   `json:"binary,omitempty"` // see Identify
 	Root    *Command `json:"root"`
 }
 

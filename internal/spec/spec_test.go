@@ -294,7 +294,7 @@ func TestExecKillsAHangingRun(t *testing.T) {
 	}
 }
 
-func TestLoadChecksTheVersionOnlyForAnotherBinary(t *testing.T) {
+func TestLoadAsksClaudeOnlyWithoutAVersion(t *testing.T) {
 	t.Parallel()
 
 	var (
@@ -321,21 +321,20 @@ func TestLoadChecksTheVersionOnlyForAnotherBinary(t *testing.T) {
 
 	for _, step := range []struct {
 		name            string
-		binary, version string
+		known, version  string // known is the version read from the path, empty when it cannot be
 		refresh         bool
 		walks, versions int32
 	}{
-		{"first completion", "bin-a", "2.1.282", false, 1, 1},
-		{"same binary: no process started", "bin-a", "2.1.282", false, 1, 1},
-		{"reinstalled, same version: checked, not walked", "bin-b", "2.1.282", false, 1, 2},
-		{"the reinstalled binary is remembered", "bin-b", "2.1.282", false, 1, 2},
-		{"updated", "bin-c", "2.1.283", false, 2, 3},
-		{"binary unknown: the version decides", "", "2.1.283", false, 2, 4},
-		{"refresh", "bin-c", "2.1.283", true, 3, 5},
+		{"first completion", "2.1.282", "2.1.282", false, 1, 0},
+		{"version read from the path: no process started", "2.1.282", "2.1.282", false, 1, 0},
+		{"updated", "2.1.283", "2.1.283", false, 2, 0},
+		{"version unknown: claude is asked", "", "2.1.283", false, 2, 1},
+		{"version unknown and updated", "", "2.1.284", false, 3, 2},
+		{"refresh", "2.1.284", "2.1.284", true, 4, 2},
 	} {
 		version = step.version
 
-		loaded, err := spec.Load(t.Context(), run, path, step.binary, step.refresh)
+		loaded, err := spec.Load(t.Context(), run, path, step.known, step.refresh)
 		if err != nil {
 			t.Fatalf("%s: %v", step.name, err)
 		}
