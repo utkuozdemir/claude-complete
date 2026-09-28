@@ -12,7 +12,6 @@ import (
 	"slices"
 	"strings"
 	"testing"
-	"time"
 )
 
 // bin is the claude-complete binary under test.
@@ -416,34 +415,55 @@ func TestDamagedCache(t *testing.T) {
 	}
 }
 
-// TestCompletionStartsNoProcess checks that claude runs only when its binary changed.
+// TestCompletionStartsNoProcess checks that claude runs only when its version cannot be read from where it is
+// installed.
 func TestCompletionStartsNoProcess(t *testing.T) {
 	t.Parallel()
 
-	mach := newMachine(t)
-	calls := func() int {
+	calls := func(mach machine) int {
 		data, _ := os.ReadFile(filepath.Join(mach.home, "claude-calls"))
 
 		return strings.Count(string(data), "\n")
 	}
 
-	mach.complete(t, "--perm")
-	mach.complete(t, "--perm")
+	// a wrapper script, whose version is asked from it
+	want := []string{"--permission-mode", "--permission-prompts"}
 
-	if got := calls(); got != 1 {
-		t.Fatalf("two completions ran claude %d times, want one version check", got)
+	wrapper := newMachine(t)
+	for range 2 {
+		if got := wrapper.complete(t, "--perm"); !slices.Equal(got, want) {
+			t.Fatalf("through a wrapper: got %q, want %q", got, want)
+		}
 	}
 
-	// a reinstall changes the binary's modification time
-	later := time.Now().Add(time.Hour)
-	if err := os.Chtimes(filepath.Join(mach.path, "claude"), later, later); err != nil {
+	if got := calls(wrapper); got != 2 {
+		t.Fatalf("two completions through a wrapper ran claude %d times, want two", got)
+	}
+
+	// the native installer, whose version is in the path
+	native := newMachine(t)
+	binary := filepath.Join(native.home, ".local", "share", "claude", "versions", "2.1.282")
+
+	if err := os.MkdirAll(filepath.Dir(binary), 0o755); err != nil {
 		t.Fatal(err)
 	}
 
-	mach.complete(t, "--perm")
+	if err := os.Rename(filepath.Join(native.path, "claude"), binary); err != nil {
+		t.Fatal(err)
+	}
 
-	if got := calls(); got != 2 {
-		t.Fatalf("a changed binary ran claude %d times in total, want a second version check", got)
+	if err := os.Symlink(binary, filepath.Join(native.path, "claude")); err != nil {
+		t.Fatal(err)
+	}
+
+	for range 2 {
+		if got := native.complete(t, "--perm"); !slices.Equal(got, want) {
+			t.Fatalf("through the native installer: got %q, want %q", got, want)
+		}
+	}
+
+	if got := calls(native); got != 0 {
+		t.Fatalf("two completions through the native installer ran claude %d times, want none", got)
 	}
 }
 

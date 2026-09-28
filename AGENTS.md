@@ -53,11 +53,12 @@ Deliberate non-goals:
 
 ## Behavior contracts
 
-- **A completion starts no process.** The cache records the `claude` binary it was read from: its resolved path, size and modification time (`spec.Identify`).
-  - Only a different binary runs `claude --version`, and only a different version walks the help again.
-  - The native installer links `claude` to a file named after its version, so an update always changes the binary.
-  - Running `--version` on every completion took two thirds of its time. Do not bring back a process start on the common path.
-  - A wrapper script as `claude` never changes, so it keeps its tree until `claude-complete spec --refresh`. The README says so.
+- **The cache is for one `claude` version, and a known install starts no process to check it.** `spec.VersionFromPath` reads the version from where `claude` resolves to:
+  - the native installer: `.../claude/versions/<version>`
+  - the Homebrew casks: `.../Caskroom/claude-code/<version>/claude`, and `claude-code@latest`
+  - For any other layout, e.g., npm or a wrapper script, `claude --version` runs on every completion. That is correct, only slower.
+  - Only a version the path itself carries counts. A version from a manifest next to the binary is not guaranteed to match it.
+  - Running `--version` on every completion took two thirds of a completion's time with the native installer, so keep the known layouts up to date when an installer changes.
 - **Printing the shell snippet never runs claude.** It happens at shell startup, when `claude` may not be on `PATH` yet (`tree.Bare`).
 - **A failure never reaches the prompt.** Missing or unreadable data, or a failed walk, means no completions.
   - The CLI files are internal and change shape between releases. So JSON is decoded member by member (`object` and `member`), and an entry in an unexpected shape affects only itself.
