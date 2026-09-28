@@ -2,7 +2,16 @@
 
 Shell completion for the [Claude Code](https://claude.com/claude-code) CLI.
 
-Claude Code has no shell completion of its own.
+> [!WARNING]
+> **AI disclaimer:** I wrote this completely using AI, but I wouldn't call it slop, personally.
+
+I found out that Claude Code still doesn't offer built-in shell completion.
+I checked the other completion projects out there, but didn't like any of them much.
+So I decided to build my own, my way.
+Hopefully it helps people until Claude Code gets its own completion.
+
+## What it does
+
 `claude-complete` reads the commands and flags from the `claude` you have installed, so they match your version after every update.
 It also completes values from the data Claude Code keeps on your machine:
 
