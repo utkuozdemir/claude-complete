@@ -45,7 +45,8 @@
 .claude/assistant-daemon-state.json
 
 ### Project ###
-# goreleaser output
+# goreleaser output, and the completion scripts it generates
 /dist
+/completions
 # local scratch space: designs, experiments, private captures
 /_work

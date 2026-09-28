@@ -108,6 +108,11 @@ After a Claude Code update that changes the help, `task test:live` checks the pa
 ## Release
 
 `task release` tags the next version from the tip of `main`, and the release workflow builds it with goreleaser.
+The release publishes archives, Linux packages and a Homebrew cask in `utkuozdemir/homebrew-tap`, which needs the `PRIVATE_ACCESS_TOKEN` secret.
+The packages and the cask install the completion scripts where the shells load them, so no startup file changes are needed.
+goreleaser generates the scripts at release time, with `claude-complete _carapace <shell>`.
+The zsh directory differs by distribution: `/usr/share/zsh/vendor-completions` on Debian, `/usr/share/zsh/site-functions` elsewhere.
+CI builds a snapshot release on every change, so a broken release configuration fails before a tag.
 The changelog groups come from the conventional commit type.
 The binary is installed with `go install`, so `go.mod` must never have a `replace` directive, which makes `go install ...@latest` fail.
 

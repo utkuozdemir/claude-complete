@@ -22,13 +22,29 @@ Both `--flag value` and `--flag=value` work.
 
 ## Install
 
+With [Homebrew](https://brew.sh), on macOS and Linux:
+
+```sh
+brew install utkuozdemir/tap/claude-complete
+```
+
+Or with the package of your Linux distribution, from the [releases](https://github.com/utkuozdemir/claude-complete/releases):
+
+```sh
+sudo apt install ./claude-complete_*_linux_amd64.deb      # Debian, Ubuntu
+sudo dnf install ./claude-complete_*_linux_amd64.rpm      # Fedora, RHEL
+sudo apk add --allow-untrusted ./claude-complete_*_linux_amd64.apk   # Alpine
+sudo pacman -U ./claude-complete_*_linux_amd64.pkg.tar.zst           # Arch
+```
+
+Both install the completion scripts where bash, zsh and fish load them, so completion works in the next shell you open.
+With Homebrew, zsh and bash need Homebrew's completions set up, as described in [Homebrew Shell Completion](https://docs.brew.sh/Shell-Completion).
+
+Or with Go, and then a line in your shell's startup file:
+
 ```sh
 go install github.com/utkuozdemir/claude-complete@latest
 ```
-
-Or download a binary from the [releases](https://github.com/utkuozdemir/claude-complete/releases).
-
-Then load it in your shell:
 
 | Shell | Add to your shell's startup file |
 | --- | --- |
