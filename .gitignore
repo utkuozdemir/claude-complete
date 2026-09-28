@@ -1,0 +1,51 @@
+### Go ###
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# test binaries and coverage output
+*.test
+*.out
+
+/vendor/
+
+### Editors / IDEs ###
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+### Agent tooling ###
+# local, uncommitted agent instructions (CLAUDE.local.md and friends).
+# Root-anchored so a legitimate *.local.md elsewhere in the tree stays visible.
+/*.local.md
+/*.override.md
+# harness runtime state
+.claude/settings.local.json
+.claude/worktrees/
+.claude/checkpoints/
+.claude/mailbox/
+.claude/routines/.state/
+.claude/scheduled_tasks.json
+.claude/scheduled_tasks.lock
+.claude/agent-registry.json
+.claude/agent-memory-local/
+.claude/first-run
+.claude/assistant-daemon-state.json
+
+### Project ###
+# goreleaser output
+/dist
+# local scratch space: designs, experiments, private captures
+/_work
