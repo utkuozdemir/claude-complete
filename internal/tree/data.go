@@ -423,7 +423,7 @@ func atLeast(installed, minimum string) bool {
 	return minimum == "" || version.IsValid("go"+minimum) && version.Compare("go"+installed, "go"+minimum) >= 0
 }
 
-// projects completes `claude project purge` with the projects the CLI keeps state for.
+// projects completes `claude purge` with the projects the CLI keeps state for.
 func projects(carapace.Context) carapace.Action {
 	var projects map[string]json.RawMessage
 

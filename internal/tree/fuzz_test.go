@@ -12,7 +12,7 @@ import (
 	"github.com/utkuozdemir/claude-complete/internal/tree"
 )
 
-// realSpec returns the spec of claude 2.1.282.
+// realSpec returns the spec of claude 2.1.302.
 func realSpec(tb testing.TB) *spec.Spec {
 	tb.Helper()
 

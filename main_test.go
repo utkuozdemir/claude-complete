@@ -37,7 +37,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-// machine has claude 2.1.282 installed and a fabricated ~/.claude.
+// machine has claude 2.1.302 installed and a fabricated ~/.claude.
 type machine struct {
 	home, cache, dir, path string
 }
@@ -45,7 +45,7 @@ type machine struct {
 // fakeClaude answers only --version, so that a test that walks fails.
 const fakeClaude = `#!/bin/sh
 echo "$*" >> "$HOME/claude-calls"
-if [ "$1" = "--version" ]; then echo "2.1.282 (Claude Code)"; exit 0; fi
+if [ "$1" = "--version" ]; then echo "2.1.302 (Claude Code)"; exit 0; fi
 echo "unexpected claude $*" >&2; exit 1
 `
 
@@ -259,7 +259,7 @@ var staticCases = []completionCase{
 	{"prose choices", []string{"--effort", "x"}, []string{"xhigh"}},
 	{"comma-separated choices", []string{"--setting-sources", "user,pro"}, []string{"user,project"}},
 	{"models from the help, the cached options and the catalog", []string{"--model", ""}, []string{
-		"claude-fable-5", "claude-fable-5-1[1m]", "claude-opus-5-5", "claude-sonnet-5", "fable", "opus", "sonnet",
+		"claude-fable-5-1[1m]", "claude-opus-5-5", "claude-sonnet-5", "fable", "opus", "sonnet",
 	}},
 	{"comma-separated models", []string{"--fallback-model", "opus,so"}, []string{"opus,sonnet"}},
 	{"subcommand flag values", []string{"agents", "--model", "op"}, []string{"opus"}},
@@ -285,7 +285,7 @@ var dataCases = []completionCase{
 	{"agents", []string{"--agent", ""}, []string{"code-reviewer", "plain"}},
 	{"mcp servers", []string{"mcp", "get", ""}, []string{"local-db", "odd", "pylon", "shared"}},
 	{"remote mcp servers", []string{"mcp", "login", ""}, []string{"odd", "pylon", "shared"}},
-	{"projects", []string{"project", "purge", "/oth"}, []string{"/other/project"}},
+	{"projects", []string{"purge", "/oth"}, []string{"/other/project"}},
 	{"installed plugins", []string{"plugin", "enable", ""}, []string{"gopls-lsp@official", "weird@official"}},
 	{"plugins to install", []string{"plugin", "install", ""}, []string{"swift-lsp@official"}},
 	{"marketplaces", []string{"plugin", "marketplace", "rm", ""}, []string{"broken", "official"}},
@@ -382,8 +382,8 @@ func TestBrokenData(t *testing.T) {
 
 	for _, tc := range []completionCase{
 		{"mcp servers", []string{"mcp", "get", ""}, []string{"shared"}},
-		{"models", []string{"--model", ""}, []string{"claude-fable-5", "fable", "opus", "sonnet"}},
-		{"projects", []string{"project", "purge", ""}, []string{}},
+		{"models", []string{"--model", ""}, []string{"fable", "opus", "sonnet"}},
+		{"projects", []string{"purge", ""}, []string{}},
 		{"jobs", []string{"stop", ""}, []string{"a5b6afd4"}},
 	} {
 		if got := mach.complete(t, tc.words...); !slices.Equal(got, tc.want) {
@@ -399,8 +399,8 @@ func TestDamagedCache(t *testing.T) {
 
 	for name, content := range map[string]string{
 		"not json":           "{not json",
-		"flag without names": `{"version": "2.1.282", "root": {"flags": [{"names": []}]}}`,
-		"null subcommand":    `{"version": "2.1.282", "root": {"commands": [null]}}`,
+		"flag without names": `{"version": "2.1.302", "root": {"flags": [{"names": []}]}}`,
+		"null subcommand":    `{"version": "2.1.302", "root": {"commands": [null]}}`,
 	} {
 		mach := newMachine(t)
 
@@ -442,7 +442,7 @@ func TestCompletionStartsNoProcess(t *testing.T) {
 
 	// the native installer, whose version is in the path
 	native := newMachine(t)
-	binary := filepath.Join(native.home, ".local", "share", "claude", "versions", "2.1.282")
+	binary := filepath.Join(native.home, ".local", "share", "claude", "versions", "2.1.302")
 
 	if err := os.MkdirAll(filepath.Dir(binary), 0o755); err != nil {
 		t.Fatal(err)
