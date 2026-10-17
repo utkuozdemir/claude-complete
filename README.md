@@ -10,6 +10,10 @@ I checked the other completion projects out there, but didn't like any of them m
 So I decided to build my own, my way.
 Hopefully it helps people until Claude Code gets its own completion.
 
+## Demo
+
+![Completing the flags, sessions, models, MCP servers and flag values of claude in zsh](img/demo.gif)
+
 ## What it does
 
 `claude-complete` reads the commands and flags from the `claude` you have installed, so they match your version after every update.
