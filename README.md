@@ -1,6 +1,6 @@
 # claude-complete
 
-Shell completion for the [Claude Code](https://claude.com/claude-code) CLI.
+Tab completion for the [Claude Code](https://claude.com/claude-code) CLI in bash, zsh and fish.
 
 > [!WARNING]
 > **AI disclaimer:** I wrote this completely using AI, but I wouldn't call it slop, personally.
