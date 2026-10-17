@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime/debug"
 	"strings"
 	"time"
 
@@ -45,7 +46,7 @@ func run(args []string) error {
 			"  source <(claude-complete _carapace zsh)    # zsh, after compinit\n" +
 			"  source <(claude-complete _carapace bash)   # bash 4.4 or newer\n" +
 			"  claude-complete _carapace fish | source    # fish",
-		Version:      version,
+		Version:      buildVersion(),
 		SilenceUsage: true,
 	}
 	cmd.CompletionOptions.DisableDefaultCmd = true
@@ -122,4 +123,17 @@ func load(ctx context.Context, refresh bool) (*spec.Spec, error) {
 	}
 
 	return loaded, nil
+}
+
+// buildVersion returns the version set at release time, or else the module version, e.g., for `go install`.
+func buildVersion() string {
+	if version != "dev" {
+		return version
+	}
+
+	if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "" && info.Main.Version != "(devel)" {
+		return info.Main.Version
+	}
+
+	return version
 }
