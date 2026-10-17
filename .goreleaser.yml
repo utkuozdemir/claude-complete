@@ -85,13 +85,13 @@ homebrew_casks:
       bash: completions/claude
       zsh: completions/_claude
       fish: completions/claude.fish
-    # the binaries are not notarized, so remove the quarantine to avoid the "damaged" error on macOS
-    hooks:
-      post:
-        install: |
-          if OS.mac?
-            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/claude-complete"]
-          end
+    # the binaries are not notarized, so macOS refuses to run them while they are quarantined
+    custom_block: |
+      on_macos do
+        postflight_steps do
+          run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{ "{{staged_path}}" }}/claude-complete"]
+        end
+      end
 
 checksum:
   name_template: checksums.txt
