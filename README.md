@@ -47,6 +47,7 @@ sudo pacman -U ./claude-complete_*_linux_amd64.pkg.tar.zst           # Arch
 ```
 
 Both install the completion scripts where bash, zsh and fish load them, so completion works in the next shell you open.
+On Linux, bash loads them through the `bash-completion` package, which most distributions install by default.
 With Homebrew, zsh and bash need Homebrew's completions set up, as described in [Homebrew Shell Completion](https://docs.brew.sh/Shell-Completion).
 
 Or with Go, and then a line in your shell's startup file:
@@ -76,7 +77,7 @@ An update is noticed by the version of the installed `claude`.
 It is read from where `claude` is installed, for the native installer and Homebrew.
 Otherwise, e.g., for npm or a wrapper script, it is asked from `claude --version` on every completion.
 
-`claude-complete spec` prints what it read.
+`claude-complete spec` prints what it read, and `claude-complete spec --refresh` reads the help again.
 
 ## License
 
