@@ -42,6 +42,7 @@ Deliberate non-goals:
 
 - `claude <unknown> --help` exits with 0 and prints the root help. A command is real only when its `Usage:` line names its own path (`usageMatches` in `internal/spec/walk.go`).
 - Some help commands hang. Every run of `claude` has a timeout, and a command that times out is left out of the tree.
+- `claude` has been seen on Linux exiting before a pipe took all of its output, which cut a piped help at a multiple of 8 KB. So its output is written to a file (`Exec` in `internal/spec/walk.go`).
 - commander prints a flag name too wide for its column alone on its line. So the parser splits the name from the description on the first line of a row only.
 - Allowed values appear as a `(choices: ...)` suffix, or as a prose list in the description. A placeholder such as `<auto|tokens>` is not a list of values.
 - The CLI keeps its data in `~/.claude` and its global configuration in `~/.claude.json`. `CLAUDE_CONFIG_DIR` moves both (`claudeDir` and `claudeJSON` in `internal/tree/data.go`).
