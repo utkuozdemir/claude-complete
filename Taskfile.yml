@@ -49,7 +49,7 @@ tasks:
   test:live:
     desc: walk the claude installed on this machine
     cmds:
-      - go test -count=1 -tags live -run TestLive ./internal/spec/
+      - go test -count=1 -tags live -run TestLive ./...
 
   release:
     desc: tag the next version from the tip of main, which starts the release workflow

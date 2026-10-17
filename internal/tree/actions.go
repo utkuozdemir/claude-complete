@@ -81,21 +81,8 @@ func (comp completer) action(flag spec.Flag) carapace.Action {
 }
 
 func (comp completer) value(flag spec.Flag) (carapace.Action, bool) {
-	switch flag.Long() {
-	case "--resume":
-		return safe(sessions), true
-	case "--from-pr":
-		return safe(pullRequests), true
-	case "--agent":
-		return safe(agents), true
-	case "--model", "--fallback-model":
-		return carapace.Batch(
-			carapace.ActionValues(comp.models...),
-			safe(modelOptions),
-			safe(catalogModels(comp.version)),
-		).ToA(), true
-	case "--plugin-dir":
-		return carapace.ActionFiles(".zip"), true
+	if source, ok := flagSources[flag.Long()]; ok {
+		return source(comp), true
 	}
 
 	choices := flag.Choices
@@ -121,24 +108,53 @@ func (comp completer) value(flag spec.Flag) (carapace.Action, bool) {
 
 // positional returns how to complete the arguments of the command at path, if they come from real data.
 func positional(path string) (carapace.Action, bool) {
-	switch path {
-	case "mcp get", "mcp remove":
-		return safe(mcpServers(false)), true
-	case "mcp login", "mcp logout":
-		return safe(mcpServers(true)), true
-	case "attach", "logs", "stop", "respawn", "rm":
-		return safe(jobs), true
-	case "project purge":
-		return safe(projects), true
-	case "plugin enable", "plugin disable", "plugin uninstall", "plugin update", "plugin details":
-		return safe(installedPlugins), true
-	case "plugin install":
-		return safe(marketplacePlugins), true
-	case "plugin marketplace remove", "plugin marketplace update":
-		return safe(marketplaces), true
+	source, ok := commandSources[path]
+	if !ok {
+		return carapace.Action{}, false
 	}
 
-	return carapace.Action{}, false
+	return safe(source), true
+}
+
+// flagSources complete the values of these flags from real data.
+var flagSources = map[string]func(comp completer) carapace.Action{
+	"--resume":         func(completer) carapace.Action { return safe(sessions) },
+	"--from-pr":        func(completer) carapace.Action { return safe(pullRequests) },
+	"--agent":          func(completer) carapace.Action { return safe(agents) },
+	"--model":          models,
+	"--fallback-model": models,
+	"--plugin-dir":     func(completer) carapace.Action { return carapace.ActionFiles(".zip") },
+}
+
+// commandSources complete the arguments of these commands from real data.
+var commandSources = map[string]carapace.CompletionCallback{
+	"mcp get":                   mcpServers(false),
+	"mcp remove":                mcpServers(false),
+	"mcp login":                 mcpServers(true),
+	"mcp logout":                mcpServers(true),
+	"attach":                    jobs,
+	"logs":                      jobs,
+	"stop":                      jobs,
+	"respawn":                   jobs,
+	"rm":                        jobs,
+	"project purge":             projects,
+	"plugin enable":             installedPlugins,
+	"plugin disable":            installedPlugins,
+	"plugin uninstall":          installedPlugins,
+	"plugin update":             installedPlugins,
+	"plugin details":            installedPlugins,
+	"plugin install":            marketplacePlugins,
+	"plugin marketplace remove": marketplaces,
+	"plugin marketplace update": marketplaces,
+}
+
+// models completes the model aliases the --model help quotes, and the models of the account.
+func models(comp completer) carapace.Action {
+	return carapace.Batch(
+		carapace.ActionValues(comp.models...),
+		safe(modelOptions),
+		safe(catalogModels(comp.version)),
+	).ToA()
 }
 
 // safe runs a data source, and returns no candidates if it panics. carapace runs it in a goroutine, where
