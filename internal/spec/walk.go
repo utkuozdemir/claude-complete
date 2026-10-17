@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 	"sync"
@@ -19,10 +20,19 @@ func Exec(bin string, timeout time.Duration) Runner {
 		ctx, cancel := context.WithTimeout(ctx, timeout)
 		defer cancel()
 
-		cmd := exec.CommandContext(ctx, bin, args...)
-		cmd.WaitDelay = 100 * time.Millisecond // a child keeping the output pipe open would block Output
+		// claude on Linux exits before a pipe takes all of its output, so it writes to a file
+		out, err := os.CreateTemp("", "claude-complete-*")
+		if err != nil {
+			return nil, fmt.Errorf("failed to create the output file: %w", err)
+		}
 
-		out, err := cmd.Output()
+		defer os.Remove(out.Name())
+		defer out.Close()
+
+		cmd := exec.CommandContext(ctx, bin, args...)
+		cmd.Stdout = out
+
+		err = cmd.Run()
 
 		if ctx.Err() != nil {
 			return nil, fmt.Errorf("claude %s: %w", strings.Join(args, " "), ctx.Err())
@@ -32,7 +42,7 @@ func Exec(bin string, timeout time.Duration) Runner {
 			return nil, fmt.Errorf("claude %s: %w", strings.Join(args, " "), err)
 		}
 
-		return out, nil
+		return os.ReadFile(out.Name())
 	}
 }
 
