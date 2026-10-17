@@ -86,7 +86,10 @@ Tests:
   - The words passed are the command line as the shell scripts send them, starting with `claude`.
   - `testdata/spec.json` is the output of `claude-complete spec` for a real version.
 - `shell_test.go` loads the snippet in zsh, bash and fish, and completes through each shell. A missing shell is skipped, CI installs all three.
-- `internal/spec/live_test.go` walks the real `claude`, with `-tags live`.
+- The live tests walk the real `claude`, with `-tags live`.
+  - `internal/spec` checks the help format.
+  - `internal/tree` checks that every flag and command in `flagSources` and `commandSources` still exists, and that the `--model` help still quotes model aliases.
+  - The `canary` workflow runs them daily against the latest Claude Code from npm. A failure there means Claude Code changed, not this repo.
 - Fuzzing covers the two places that read input nobody here controls:
   - `FuzzParse` feeds arbitrary help. No choice may be empty, and the cache must accept what the parser produced.
   - `FuzzLine` feeds arbitrary command lines to the scanner. Its output must not change when scanned again. This cannot tell a wrong reading from a right one, so a scanner fix still needs its case in the end-to-end table.
@@ -105,7 +108,7 @@ Performance:
 ## Verifying changes
 
 `task lint`, then `task test`.
-After a Claude Code update that changes the help, `task test:live` checks the parser against the installed `claude`.
+After a Claude Code update that changes the help, `task test:live` checks the parser and the data sources against the installed `claude`.
 
 ## Release
 

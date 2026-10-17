@@ -13,7 +13,7 @@ import (
 func TestLive(t *testing.T) {
 	t.Parallel()
 
-	root, err := spec.Walk(t.Context(), spec.Exec("claude", 2*time.Second))
+	root, err := spec.Walk(t.Context(), spec.Exec("claude", 10*time.Second))
 	if err != nil {
 		t.Fatal(err)
 	}

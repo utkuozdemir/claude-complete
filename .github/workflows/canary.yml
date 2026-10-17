@@ -1,0 +1,32 @@
+---
+name: canary
+
+# Claude Code releases about daily. This walks the latest release, so a change in its help or a renamed
+# flag or command shows up here before a user notices missing completions.
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "17 6 * * *"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash --noprofile --norc -euox pipefail {0}
+
+jobs:
+  canary:
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Install the latest Claude Code
+        run: npm install --global @anthropic-ai/claude-code@latest && claude --version
+      - name: Test against it
+        run: go test -count=1 -tags live -run TestLive ./...
