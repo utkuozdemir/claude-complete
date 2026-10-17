@@ -109,7 +109,7 @@ Performance:
 
 - `task demo:record` re-records `img/demo.gif` from `demo/demo.tape`, in the recorder's image with zsh and `claude` added (`demo/Dockerfile`), against a made-up `~/.claude` (`demo/setup.sh`). The `demo` workflow does the same from the GitHub UI and opens a pull request.
 - The tape picks an item by counting Tab presses. That relies on `menu yes select` in `demo/zshrc`, where the first Tab already selects, and on the order of the candidates. A new flag that sorts before `--resume`, for example, moves it, so look at the recording after re-recording.
-- A pull request opened with the workflow's token starts no workflows, so the `demo` workflow starts `build` on its branch itself, which `main` requires.
+- The `build` check of a pull request the `demo` workflow opens waits for a maintainer to approve the run, since the workflow's token opened it. A `build` run started on that branch any other way does not count for the pull request.
 
 ## Verifying changes
 
