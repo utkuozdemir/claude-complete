@@ -49,6 +49,8 @@ nfpms:
       - apk
       - archlinux
     bindir: /usr/bin
+    recommends:
+      - bash-completion # bash loads no completion scripts without it
     contents:
       - src: completions/claude
         dst: /usr/share/bash-completion/completions/claude
@@ -79,7 +81,6 @@ homebrew_casks:
     directory: Casks
     homepage: https://github.com/utkuozdemir/claude-complete
     description: Shell completion for the Claude Code CLI
-    license: MIT
     completions:
       bash: completions/claude
       zsh: completions/_claude
