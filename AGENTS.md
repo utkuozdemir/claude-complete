@@ -105,6 +105,12 @@ Performance:
 - Never call `tree.New` in a loop in a test. carapace keeps every tree it gets until the process exits, so memory grows without bound and each call gets slower. `export_test.go` exposes the scanner and the data sources for this reason.
 - Opening the transcripts costs more than parsing them. Each tail is read with one call. Opening fewer files would need an index of its own.
 
+## Demo
+
+- `task demo:record` re-records `img/demo.gif` from `demo/demo.tape`, in the recorder's image with zsh and `claude` added (`demo/Dockerfile`), against a made-up `~/.claude` (`demo/setup.sh`). The `demo` workflow does the same from the GitHub UI and opens a pull request.
+- The tape picks an item by counting Tab presses. That relies on `menu yes select` in `demo/zshrc`, where the first Tab already selects, and on the order of the candidates. A new flag that sorts before `--resume`, for example, moves it, so look at the recording after re-recording.
+- A pull request opened with the workflow's token starts no workflows, so the `demo` workflow starts `build` on its branch itself, which `main` requires.
+
 ## Verifying changes
 
 `task lint`, then `task test`.

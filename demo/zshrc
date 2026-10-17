@@ -1,0 +1,13 @@
+# The shell the demo is recorded in. vhs starts zsh with --no-rcs, so the tape sources this file.
+"${0:A:h}/setup.sh" /tmp/demo
+
+export HOME=/tmp/demo XDG_CACHE_HOME=/tmp/demo/.cache
+
+# a prompt of one plain character, as an escape sequence would be counted as visible width
+PROMPT='❯ '
+
+autoload -Uz compinit && compinit -u -d "$XDG_CACHE_HOME/zcompdump"
+zstyle ':completion:*' menu yes select # the first Tab starts the selection, so the tape can count Tabs
+source <(claude-complete _carapace zsh)
+
+cd ~/work/acme-api

@@ -1,0 +1,71 @@
+# The recording settings, the same as the pv-migrate demos.
+#
+# The dimensions are twice what the README displays, and the height fits the
+# longest completion list in the demo. GitHub renders the image at
+# around 880 pixels wide, and recording at twice that leaves enough pixels for
+# the text to stay sharp on a high density screen. The font size is doubled with
+# them, which keeps the column count and the apparent text size unchanged.
+#
+# The colours come from GitHub's own dark theme, via its Primer primitives, so
+# the terminal in the picture matches the page around it.
+
+Set Shell "zsh"
+
+# Named rather than left to the default, because the recorder falls back
+# silently when a font is missing and the recording then wraps at a different
+# column. The recorder's image carries this one, which is why task demo:record
+# records in it.
+#
+# The weight is part of the family name because the recorder has no setting for
+# it, only a family and a size. At the regular weight the text came out thin
+# against the dark background, and matching what GitHub itself renders is not an
+# option: its font stack resolves to SF Mono on a Mac, which does not exist in
+# the recorder's image, and the one member of that stack the image does carry
+# paints even less ink than this family does.
+Set FontFamily "JetBrains Mono SemiBold"
+Set FontSize 36
+Set Width 2800
+Set Height 760
+Set Padding 48
+Set Margin 32
+Set MarginFill "#0d1117"
+Set BorderRadius 20
+Set WindowBar Colorful
+Set WindowBarSize 80
+Set Framerate 30
+Set TypingSpeed 45ms
+Set CursorBlink false
+
+Set Theme {
+  "background": "#0d1117",
+  "foreground": "#f0f6fc",
+  "cursorColor": "#f0f6fc",
+  "selectionBackground": "#264f78",
+  "black": "#2f3742",
+  "red": "#ff7b72",
+  "green": "#3fb950",
+  "yellow": "#d29922",
+  "blue": "#58a6ff",
+  "purple": "#be8fff",
+  "cyan": "#39c5cf",
+  "white": "#f0f6fc",
+  "brightBlack": "#656c76",
+  "brightRed": "#ffa198",
+  "brightGreen": "#56d364",
+  "brightYellow": "#e3b341",
+  "brightBlue": "#79c0ff",
+  "brightPurple": "#d2a8ff",
+  "brightCyan": "#56d4dd",
+  "brightWhite": "#ffffff"
+}
+
+# Everything above is a directive that the recorder only honours at the top of
+# the file, before anything else. Env is not one of them, and putting it in
+# between silently turned every setting below it into a warning nobody read,
+# so the recordings came out at the recorder's own defaults. Keep the settings
+# together, and keep anything that is not a setting after them.
+# The recorder's own image sets no locale, and without one the shell mangles
+# anything outside ASCII: the prompt below arrives as ">" rather than "❯", and
+# a tape waiting for it waits forever. LC_ALL alone, since it outranks every
+# other locale variable.
+Env LC_ALL C.UTF-8

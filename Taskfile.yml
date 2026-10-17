@@ -51,6 +51,17 @@ tasks:
     cmds:
       - go test -count=1 -tags live -run TestLive ./...
 
+  # The README demo comes from the target below, recorded in a container so that it looks the same on every
+  # machine. It is re-recorded on demand only, since each run commits another GIF.
+  demo:record:
+    desc: re-record the README demo GIF (needs docker)
+    cmds:
+      - GOOS=linux CGO_ENABLED=0 go build -o dist/demo/claude-complete .
+      - docker build -q --no-cache -t claude-complete-demo demo # the claude install is not cached, so it is the latest
+      - >-
+        docker run --rm -v "$PWD":/vhs -v "$PWD/dist/demo/claude-complete":/usr/local/bin/claude-complete
+        claude-complete-demo demo/demo.tape
+
   release:
     desc: tag the next version from the tip of main, which starts the release workflow
     vars:
