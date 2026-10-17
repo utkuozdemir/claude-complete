@@ -29,7 +29,7 @@ func BenchmarkLoadCached(b *testing.B) {
 	b.ReportAllocs()
 
 	for b.Loop() {
-		if _, err := spec.Load(b.Context(), run, path, "2.1.282", false); err != nil {
+		if _, err := spec.Load(b.Context(), run, path, "2.1.302", false); err != nil {
 			b.Fatal(err)
 		}
 	}

@@ -22,8 +22,8 @@ It also completes values from the data Claude Code keeps on your machine:
 - `claude mcp get <TAB>`: your MCP servers
 - `claude stop <TAB>`: your background sessions
 - `claude plugin install <TAB>`: the plugins of the marketplaces you added
-- `claude plugin enable <TAB>`, `disable`, `update` and so on: the plugins you installed
-- `claude project purge <TAB>`: the projects Claude Code keeps state for
+- `claude plugin enable <TAB>`, `disable`, `configure`, `update` and so on: the plugins you installed
+- `claude purge <TAB>`: the projects Claude Code keeps state for
 - `--effort`, `--permission-mode` and the other flags with a fixed set of values: those values
 - flags that take a path: files or directories
 
